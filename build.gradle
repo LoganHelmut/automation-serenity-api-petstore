@@ -1,0 +1,94 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'application'
+apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
+
+group = 'petstore.api.serenity.automation'
+version = '1.0-SNAPSHOT'
+
+ext {
+    serenityCoreVersion = '4.1.20'
+    appiumVersion = '9.2.2'
+    junitVersion = '5.10.2'
+    assertJVersion = '3.25.3'
+    logbackVersion = '1.5.4'
+    slf4jVersion = '2.0.12'
+    versionCucumber = '7.18.0'
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://repo1.maven.org/maven2/"
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'org.ajoberstar:gradle-jacoco:0.3.0'
+        classpath 'org.sonarqube.gradle:gradle-sonarqube-plugin:1.1'
+        classpath "net.serenity-bdd:serenity-gradle-plugin:4.0.46"
+    }
+}
+
+repositories {
+    repositories {
+        maven {
+            url "https://repo1.maven.org/maven2/"
+        }
+    }
+    mavenCentral()
+}
+
+defaultTasks 'clean', 'test', 'aggregate'
+
+dependencies {
+    implementation "net.serenity-bdd:serenity-cucumber:${serenityCoreVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay-rest:${serenityCoreVersion}"
+    implementation group: 'io.cucumber', name: 'datatable', version: "${versionCucumber}"
+    implementation "net.serenity-bdd:serenity-ensure:${serenityCoreVersion}"
+    testImplementation "net.serenity-bdd:serenity-ensure:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-core:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-junit:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay-webdriver:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-cucumber:${serenityCoreVersion}",
+            "org.junit.jupiter:junit-jupiter-api:${junitVersion}",
+            "org.assertj:assertj-core:${assertJVersion}",
+            "org.slf4j:slf4j-simple:${slf4jVersion}"
+    "ch.qos.logback:logback-classic:${logbackVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    implementation 'com.oracle.database.jdbc:ojdbc10:19.20.0.0'
+    implementation group: 'io.rest-assured', name: 'json-schema-validator', version: '4.3.3'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.4.1'
+    implementation group: 'com.codoid.products', name: 'fillo', version: '1.18'
+    implementation group: 'org.apache.poi', name: 'poi', version: '5.2.5'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.5'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0'
+    implementation 'net.datafaker:datafaker:2.4.2'
+}
+
+test {
+    useJUnit {
+        include "**/*";
+        gradle.startParameter.continueOnFailure = true
+        testLogging.showStandardStreams = true
+        systemProperties System.getProperties()
+        systemProperty "cucumber.filter.tags", System.getProperty("cucumber.filter.tags")
+    }
+}
+
+// Configurar el encoding del proyecto
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+// Continue asi falle alguna tarea de Gradle
+gradle.startParameter.continueOnFailure = true
+
+test.finalizedBy(aggregate)
