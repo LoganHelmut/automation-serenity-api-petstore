@@ -2,6 +2,12 @@
 
 A UI test automation framework (Serenity BDD + RestAssured + Java + ScreenPlay) using **Java 20** and **Gradle 8.10 (via wrapper)**.
 
+## 🚀 Video Results
+
+1. Link to video with results API Testing:
+   ```bash
+   https://jam.dev/c/ccf2e090-958c-4749-b759-43995ebc457e
+   
 ## ✅ Requirements
 
 - Java 20 installed (`java -version`)
